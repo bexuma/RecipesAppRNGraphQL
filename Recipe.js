@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Image, Text, StyleSheet, FlatList } from 'react-native'
+import { ScrollView, Image, Text, StyleSheet, FlatList, TouchableOpacity, Share } from 'react-native'
 
 export default class Recipe extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -23,6 +23,16 @@ export default class Recipe extends React.Component {
     return (
       <Text style={styles.instruction}>{index + 1}. {item}</Text>
     )
+  }
+
+  onPressShare = (recipeTitle) => {
+    Share.share({
+      message: 'http://n17r.com',
+      title: recipeTitle
+    }, {
+      // Android only:
+      dialogTitle: 'Share recipe',
+    })
   }
 
   render () {
@@ -55,10 +65,18 @@ export default class Recipe extends React.Component {
         </Text>
 
         <FlatList
-          style={[styles.section, styles.blank]}
+          style={styles.section}
           data={recipe.instructions}
           renderItem={this.renderInstruction}
         />
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={this.onPressShare(recipe.title)}>
+
+          <Text style={styles.buttonText}>Share</Text>
+
+        </TouchableOpacity>
         
       </ScrollView>
     )
@@ -69,7 +87,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    padding: 10
+    padding: 15
   },
   title: {
     fontSize: 20
@@ -90,8 +108,15 @@ const styles = StyleSheet.create({
   instruction: {
     marginBottom: 10
   },
-  blank: {
-    marginBottom: 40
+  button: {
+    marginBottom: 40,
+    alignItems: 'center',
+    backgroundColor: '#159688',
+    padding: 10
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: 'bold'
   }
 
 })

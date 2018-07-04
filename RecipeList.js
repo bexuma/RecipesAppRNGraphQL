@@ -55,7 +55,14 @@ class RecipeList extends React.Component {
             recipe: item,
           })
         }>
-        <Text>{item.title}</Text>
+        <View>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text
+            numberOfLines={2}
+          >
+            {item.description}
+          </Text>
+        </View>
       </TouchableOpacity>
     )
   }
@@ -88,10 +95,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff'
   },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 15
+  },
   recipe: {
     flex: 1,
     flexDirection: 'row',
-    height: 60,
+    height: 80,
     alignItems: 'center',
     paddingLeft: 20,
     paddingRight: 20,
