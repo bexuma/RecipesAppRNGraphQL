@@ -2,6 +2,7 @@ import React from 'react'
 import Recipe from './Recipe'
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
+import ActionButton from 'react-native-action-button';
 import { View, TouchableHighlight, ActivityIndicator, Modal, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native'
 
 const allRecipesQuery = gql`
@@ -82,6 +83,14 @@ class RecipeList extends React.Component {
         <FlatList
           data={this.state.recipes}
           renderItem={this.renderRecipe}
+        />
+        <ActionButton
+          buttonColor="rgba(231,76,60,1)"
+          onPress={() => {
+            this.props.navigation.navigate('CreateRecipe', {
+              allRecipesQuery: this.props.allRecipesQuery,
+            })
+          }}
         />
       </View>
     )

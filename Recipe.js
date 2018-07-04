@@ -72,7 +72,7 @@ export default class Recipe extends React.Component {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={this.onPressShare(recipe.title)}>
+          onPress={() => this.onPressShare(recipe.title)}>
 
           <Text style={styles.buttonText}>Share</Text>
 
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   button: {
-    marginBottom: 40,
+    marginBottom: 30,
     alignItems: 'center',
     backgroundColor: '#159688',
     padding: 10
