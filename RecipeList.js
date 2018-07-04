@@ -3,7 +3,7 @@ import Recipe from './Recipe'
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import ActionButton from 'react-native-action-button';
-import { View, TouchableHighlight, ActivityIndicator, Modal, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native'
+import { View, TouchableHighlight, ActivityIndicator, RefreshControl, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native'
 
 const allRecipesQuery = gql`
   query {
@@ -34,8 +34,7 @@ class RecipeList extends React.Component {
     super(props)
     this.state = {
       recipes: [],
-      modalVisible: false,
-      user: undefined,
+      refreshing: false,
     }
 
   }
@@ -58,14 +57,19 @@ class RecipeList extends React.Component {
         }>
         <View>
           <Text style={styles.title}>{item.title}</Text>
-          <Text
-            numberOfLines={2}
-          >
+          <Text numberOfLines={2} >
             {item.description}
           </Text>
         </View>
       </TouchableOpacity>
     )
+  }
+
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    this.props.allRecipesQuery.refetch().then(() => {
+      this.setState({refreshing: false});
+    });
   }
 
   render () {
@@ -83,6 +87,12 @@ class RecipeList extends React.Component {
         <FlatList
           data={this.state.recipes}
           renderItem={this.renderRecipe}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />
+          }
         />
         <ActionButton
           buttonColor="rgba(231,76,60,1)"
