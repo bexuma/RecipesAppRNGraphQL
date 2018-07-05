@@ -153,9 +153,10 @@ class CreateRecipe extends React.Component {
         <TouchableOpacity
         	style={styles.submitButton}
         	onPress={() => {
-          	this._createRecipe()
-          	allRecipesQuery.refetch()
-          	this.props.navigation.goBack()
+            this.uploadPhoto(this.state.title, pictureUrl)
+          	// this._createRecipe()
+          	// allRecipesQuery.refetch()
+          	// this.props.navigation.goBack()
           }}
         	
         >
@@ -187,6 +188,36 @@ class CreateRecipe extends React.Component {
    })
    this.props.onComplete()
   }
+
+  uploadPhoto = (localUri, filename) => {
+    const formData = new FormData()
+    const data = {
+      uri: localUri,
+      name: 'test.jpg',
+      type: 'image/jpeg',
+    }
+
+    formData.append('data', data)
+
+    const options = {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+
+    return fetch('https://api.graph.cool/file/v1/cjd2s0bub97io0123o8twdrjt', options)
+    .then((response) => {
+      return response.json()
+    }).then((image) => {
+      alert(image)
+      return image
+    })
+    .catch(error => console.error(`Error uploading image`))
+  }
+
 }
 
 
