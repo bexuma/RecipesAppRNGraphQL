@@ -34,6 +34,3 @@ const RootStack = createStackNavigator(
   }
 );
 
-console.disableYellowBox = true;
-
-

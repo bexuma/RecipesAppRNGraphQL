@@ -1,8 +1,9 @@
 import React from 'react'
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
-import { View, ScrollView, TouchableOpacity, FlatList, Image, Text, StyleSheet, TouchableHighlight, KeyboardAvoidingView } from 'react-native'
+import { View, ScrollView, TouchableOpacity, Button, FlatList, Image, Text, StyleSheet, TouchableHighlight, KeyboardAvoidingView } from 'react-native'
 import { TextInput } from 'react-native-paper';
+import { ImagePicker } from 'expo';
 
 const createRecipeMutation = gql`
   mutation ($title: String!, $description: String!, $ingredients: [String!]!, $instructions: [String!]!){
@@ -31,6 +32,7 @@ class CreateRecipe extends React.Component {
     instruction: '',
     ingredients: [],
     instructions: [],
+    pictureUrl: ''
   }
 
   handleAddIngredientForm = () => {
@@ -51,15 +53,17 @@ class CreateRecipe extends React.Component {
   	const { navigation } = this.props;
     const allRecipesQuery = navigation.getParam('allRecipesQuery', '');
     const ingredientInputText = (this.state.ingredients.length === 0)
-    		? 'Type an ingredient...'
-    		: 'Add one more ingredient...'
-    const instructionInputText = (this.state.ingredients.length === 0)
-    		? 'Type an instruction...'
-    		: 'Add one more instruction...'
+    		? 'Insert an ingredient...'
+    		: 'Insert one more ingredient...'
+    const instructionInputText = (this.state.instructions.length === 0)
+    		? 'Insert an instruction...'
+    		: 'Insert one more instruction...'
+
+    let { pictureUrl } = this.state;
 
     return (
     	<KeyboardAvoidingView
-    		behavior="position"
+    		behavior="padding"
         contentContainerStyle={{ flex: 1 }}
         style={{ flex: 1 }}
         keyboardVerticalOffset={32}
@@ -83,7 +87,7 @@ class CreateRecipe extends React.Component {
           value={this.state.description}
         />
 
-        <Text style={styles.header}>Ingredients</Text>
+        <Text style={[styles.header, {paddingTop: 2}]}>Ingredients</Text>
 
         <FlatList
           data={this.state.ingredients}
@@ -103,11 +107,12 @@ class CreateRecipe extends React.Component {
         	style={styles.button}
         >
         	<Text style={styles.buttonText}>
-        		Add more ingredients
+        		Add ingredient
         	</Text>
 
         </TouchableOpacity>
 
+        <Text style={[styles.header, {paddingTop: 10}]}>Instructions</Text>
 
         <FlatList
           data={this.state.instructions}
@@ -127,9 +132,22 @@ class CreateRecipe extends React.Component {
         	style={styles.button}
         >
         	<Text style={styles.buttonText}>
-        		Add more instructions
+        		Add instruction
         	</Text>
 
+        </TouchableOpacity>
+
+        {pictureUrl
+            ? (<Image source={{ uri: pictureUrl }} style={{ height: 200, marginTop: 10 }} />)
+            : null }
+        
+        <TouchableOpacity
+          style={[styles.button, styles.addImagebutton]}
+          onPress={this.pickImage}
+        >
+          <Text style={styles.buttonText}>
+            Choose an image
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -151,13 +169,24 @@ class CreateRecipe extends React.Component {
     )
   }
 
-   _createRecipe = async () => {
-     const {title, description, ingredients, instructions} = this.state
-     await this.props.createRecipeMutation({
-       variables: {title, description, ingredients, instructions}
-     })
-     this.props.onComplete()
-   }
+  pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+
+    if (!result.cancelled) {
+      this.setState({ pictureUrl: result.uri });
+    }
+  };
+
+  _createRecipe = async () => {
+   const {title, description, ingredients, instructions} = this.state
+   await this.props.createRecipeMutation({
+     variables: {title, description, ingredients, instructions}
+   })
+   this.props.onComplete()
+  }
 }
 
 
@@ -195,6 +224,10 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontWeight: 'bold'
+  },
+  addImagebutton: {
+    marginTop: 10,
+    backgroundColor: '#009688',
   },
   submitButton: {
   	alignItems: 'center',
