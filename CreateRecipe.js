@@ -29,7 +29,7 @@ class CreateRecipe extends React.Component {
     description: '',
     ingredient: '',
     instruction: '',
-    ingredients: ['dsf', 'sdfsdf', 'sdfsdf', 'sdfdsf'],
+    ingredients: [],
     instructions: [],
   }
 
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
   button: {
   	alignItems: 'center',
-    backgroundColor: '#009688',
+    backgroundColor: '#26A69A',
     padding: 10
   },
   buttonText: {
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
   	alignItems: 'center',
-    backgroundColor: '#00695C',
+    backgroundColor: '#00796B',
     padding: 10,
     marginTop: 10,
     marginBottom: 16

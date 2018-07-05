@@ -79,7 +79,6 @@ class RecipeList extends React.Component {
           <ActivityIndicator/>
         </View>
       )
-
     }
 
     return (
