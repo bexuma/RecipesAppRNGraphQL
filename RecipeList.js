@@ -3,7 +3,7 @@ import Recipe from './Recipe'
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import ActionButton from 'react-native-action-button';
-import { View, TouchableHighlight, ActivityIndicator, RefreshControl, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native'
+import { View, ActivityIndicator, RefreshControl, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native'
 
 const allRecipesQuery = gql`
   query {

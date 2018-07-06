@@ -19,6 +19,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@babel/preset-react": "^7.0.0-beta.51",
     "apollo-client": "^2.3.5",
     "apollo-client-preset": "^1.0.8",
     "expo": "^27.0.1",

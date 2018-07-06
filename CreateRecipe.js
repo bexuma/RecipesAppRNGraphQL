@@ -6,8 +6,8 @@ import { TextInput } from 'react-native-paper';
 import { ImagePicker } from 'expo';
 
 const createRecipeMutation = gql`
-  mutation ($title: String!, $description: String!, $ingredients: [String!]!, $instructions: [String!]!){
-    createRecipe(title: $title, description: $description, ingredients: $ingredients, instructions: $instructions) {
+  mutation ($title: String!, $description: String!, $ingredients: [String!]!, $instructions: [String!]!, $imageUrl: String!){
+    createRecipe(title: $title, description: $description, ingredients: $ingredients, instructions: $instructions, imageUrl: $imageUrl) {
       id
     }
   }
@@ -32,7 +32,7 @@ class CreateRecipe extends React.Component {
     instruction: '',
     ingredients: [],
     instructions: [],
-    pictureUrl: ''
+    image: ''
   }
 
   handleAddIngredientForm = () => {
@@ -59,7 +59,7 @@ class CreateRecipe extends React.Component {
     		? 'Insert an instruction...'
     		: 'Insert one more instruction...'
 
-    let { pictureUrl } = this.state;
+    let { image } = this.state;
 
     return (
     	<KeyboardAvoidingView
@@ -137,8 +137,8 @@ class CreateRecipe extends React.Component {
 
         </TouchableOpacity>
 
-        {pictureUrl
-            ? (<Image source={{ uri: pictureUrl }} style={{ height: 200, marginTop: 10 }} />)
+        {image
+            ? (<Image source={{ uri: image.uri }} style={{ height: 200, marginTop: 10 }} />)
             : null }
         
         <TouchableOpacity
@@ -153,7 +153,7 @@ class CreateRecipe extends React.Component {
         <TouchableOpacity
         	style={styles.submitButton}
         	onPress={() => {
-          	this._createRecipe()
+            this._createRecipe(image);
           	allRecipesQuery.refetch()
           	this.props.navigation.goBack()
           }}
@@ -176,16 +176,31 @@ class CreateRecipe extends React.Component {
     });
 
     if (!result.cancelled) {
-      this.setState({ pictureUrl: result.uri });
+      this.setState({ image: result });
     }
   };
 
-  _createRecipe = async () => {
-   const {title, description, ingredients, instructions} = this.state
-   await this.props.createRecipeMutation({
-     variables: {title, description, ingredients, instructions}
-   })
-   this.props.onComplete()
+  _createRecipe = async (image) => {
+    let data = new FormData()
+    data.append('data', {uri: image.uri, name: 'Recipe', type: 'multipart/form-data'})
+
+    try {
+      const res = await fetch('https://api.graph.cool/file/v1/cjd2s0bub97io0123o8twdrjt', {
+        method: 'POST',
+        body: data
+      })
+      const resJson = await res.json();
+      // alert(JSON.stringify(resJson));
+      // console.log('resJson: ', resJson)
+      const {title, description, ingredients, instructions} = this.state
+      await this.props.createRecipeMutation({
+       variables: {title, description, ingredients, instructions, imageUrl: resJson.url}
+      })
+
+    } catch (err) {
+      console.log('err', err)
+    }
+    
   }
 }
 
