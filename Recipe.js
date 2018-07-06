@@ -35,7 +35,7 @@ class Recipe extends React.Component {
     )
   }
 
-  onPressShare = (recipeTitle) => {
+  handleOnPressShareButton = (recipeTitle) => {
     Share.share({
       message: 'http://n17r.com',
       title: recipeTitle
@@ -45,7 +45,7 @@ class Recipe extends React.Component {
     })
   }
 
-  onPressDelete = async (recipeId) => {
+  handleOnPressDeleteButton = async (recipeId) => {
     await this.props.deleteRecipeMutation({
      variables: {id: recipeId}
     })
@@ -95,7 +95,7 @@ class Recipe extends React.Component {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => this.onPressShare(recipe.title)}>
+          onPress={() => this.handleOnPressShareButton(recipe.title)}>
 
           <Text style={styles.buttonText}>Share</Text>
 
@@ -104,7 +104,7 @@ class Recipe extends React.Component {
         <TouchableOpacity
           style={[styles.button, {marginBottom: 28, backgroundColor: '#00796B'}]}
           onPress={() => {
-            this.onPressDelete(recipe.id)
+            this.handleOnPressDeleteButton(recipe.id)
             allRecipesQuery.refetch()
             this.props.navigation.goBack()
           }}
