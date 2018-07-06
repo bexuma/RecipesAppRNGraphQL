@@ -13,6 +13,7 @@ const allRecipesQuery = gql`
       description
       ingredients
       instructions
+      imageUrl
     }
   }
 `
@@ -53,6 +54,7 @@ class RecipeList extends React.Component {
       <TouchableOpacity style={styles.recipe} onPress={() =>
           navigation.navigate('Recipe', {
             recipe: item,
+            allRecipesQuery: this.props.allRecipesQuery,
           })
         }>
         <View>

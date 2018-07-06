@@ -1,7 +1,17 @@
 import React from 'react'
 import { ScrollView, Image, Text, StyleSheet, FlatList, TouchableOpacity, Share } from 'react-native'
+import { graphql } from 'react-apollo'
+import gql from 'graphql-tag'
 
-export default class Recipe extends React.Component {
+const deleteRecipeMutation = gql`
+  mutation ($id: ID!){
+    deleteRecipe(id: $id) {
+      id
+    }
+  }
+`
+
+class Recipe extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.state.params.recipe.title,
     headerStyle: {
@@ -35,12 +45,25 @@ export default class Recipe extends React.Component {
     })
   }
 
+  onPressDelete = async (recipeId) => {
+    await this.props.deleteRecipeMutation({
+     variables: {id: recipeId}
+    })
+    this.props.onComplete()
+  }
+
   render () {
     const { navigation } = this.props;
     const recipe = navigation.getParam('recipe', '')
+    const allRecipesQuery = navigation.getParam('allRecipesQuery', '');
 
     return (
       <ScrollView style={styles.container}>
+
+        <Image
+          style={{height: 200, marginBottom: 10}}
+          source={{uri: recipe.imageUrl}}
+        />
 
         <Text style={styles.header}>
           Описание
@@ -77,11 +100,24 @@ export default class Recipe extends React.Component {
           <Text style={styles.buttonText}>Share</Text>
 
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, {marginBottom: 28, backgroundColor: '#00796B'}]}
+          onPress={() => {
+            this.onPressDelete(recipe.id)
+            allRecipesQuery.refetch()
+            this.props.navigation.goBack()
+          }}
+        >
+          <Text style={styles.buttonText}>Delete</Text>
+        </TouchableOpacity>
         
       </ScrollView>
     )
   }
 }
+
+export default graphql(deleteRecipeMutation, {name: 'deleteRecipeMutation'})(Recipe)
 
 const styles = StyleSheet.create({
   container: {
@@ -109,7 +145,7 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   button: {
-    marginBottom: 30,
+    marginBottom: 10,
     alignItems: 'center',
     backgroundColor: '#159688',
     padding: 10
