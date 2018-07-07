@@ -22,6 +22,7 @@ class RecipeList extends React.Component {
 
   static navigationOptions = {
     title: 'Recipe list',
+    headerLeft: null,
     headerStyle: {
       backgroundColor: '#159688',
     },
@@ -75,8 +76,9 @@ class RecipeList extends React.Component {
   }
 
   render () {
-    global.token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MzM0NjA3NzcsImlhdCI6MTUzMDg2ODc3NywicHJvamVjdElkIjoiY2pkMnMwYnViOTdpbzAxMjNvOHR3ZHJqdCIsInVzZXJJZCI6ImNqajlwaXZwZWZiZDQwMTkzeWxidjZ4ZGgiLCJhdXRoRGF0YSI6eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifSwibW9kZWxOYW1lIjoiVXNlciJ9.M0yZ1CH-X3IVohK4Xo_2HFhDVoSE20iz_PgDa6y_WG8"
-    
+    const { navigation } = this.props;
+    const user = navigation.getParam('user', '')
+
     if (this.props.allRecipesQuery.loading) {
       return (
         <View style={{flex: 1, padding: 20}}>
@@ -102,6 +104,7 @@ class RecipeList extends React.Component {
           onPress={() => {
             this.props.navigation.navigate('CreateRecipe', {
               allRecipesQuery: this.props.allRecipesQuery,
+              authorId: user.id
             })
           }}
         />

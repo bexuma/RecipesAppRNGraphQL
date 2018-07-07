@@ -6,8 +6,8 @@ import { TextInput } from 'react-native-paper';
 import { ImagePicker } from 'expo';
 
 const createRecipeMutation = gql`
-  mutation ($title: String!, $description: String!, $ingredients: [String!]!, $instructions: [String!]!, $imageUrl: String!){
-    createRecipe(title: $title, description: $description, ingredients: $ingredients, instructions: $instructions, imageUrl: $imageUrl) {
+  mutation ($title: String!, $description: String!, $ingredients: [String!]!, $instructions: [String!]!, $imageUrl: String!, $authorId: ID!){
+    createRecipe(title: $title, description: $description, ingredients: $ingredients, instructions: $instructions, imageUrl: $imageUrl, authorId: $authorId) {
       id
     }
   }
@@ -52,6 +52,7 @@ class CreateRecipe extends React.Component {
   render () {
   	const { navigation } = this.props;
     const allRecipesQuery = navigation.getParam('allRecipesQuery', '');
+    const authorId = navigation.getParam('authorId', '')
     const ingredientInputText = (this.state.ingredients.length === 0)
     		? 'Insert an ingredient...'
     		: 'Insert one more ingredient...'
@@ -153,7 +154,7 @@ class CreateRecipe extends React.Component {
         <TouchableOpacity
         	style={styles.submitButton}
         	onPress={() => {
-            this._createRecipe(image);
+            this._createRecipe(image, authorId);
           	allRecipesQuery.refetch()
           	this.props.navigation.goBack()
           }}
@@ -180,7 +181,7 @@ class CreateRecipe extends React.Component {
     }
   };
 
-  _createRecipe = async (image) => {
+  _createRecipe = async (image, authorId) => {
     let data = new FormData()
     data.append('data', {uri: image.uri, name: 'Recipe', type: 'multipart/form-data'})
 
@@ -194,7 +195,7 @@ class CreateRecipe extends React.Component {
       // console.log('resJson: ', resJson)
       const {title, description, ingredients, instructions} = this.state
       await this.props.createRecipeMutation({
-       variables: {title, description, ingredients, instructions, imageUrl: resJson.url}
+       variables: {title, description, ingredients, instructions, imageUrl: resJson.url, authorId: authorId}
       })
 
     } catch (err) {
