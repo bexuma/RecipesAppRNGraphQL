@@ -7,6 +7,7 @@ import RecipeList from './RecipeList'
 import Recipe from './Recipe'
 import CreateRecipe from './CreateRecipe'
 import SignIn from './SignIn'
+import SignUp from './SignUp'
 
 const httpLink = new HttpLink({ uri: 'https://api.graph.cool/simple/v1/cjd2s0bub97io0123o8twdrjt' })
 
@@ -45,7 +46,8 @@ const RootStack = createStackNavigator(
     RecipeList: RecipeList,
     Recipe: Recipe,
     CreateRecipe: CreateRecipe,
-    SignIn: SignIn
+    SignIn: SignIn,
+    SignUp: SignUp
   },
   {
     initialRouteName: 'SignIn',

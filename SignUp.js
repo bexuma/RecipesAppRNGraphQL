@@ -1,8 +1,16 @@
 import React from 'react'
-import { graphql } from 'react-apollo'
+import { graphql, compose } from 'react-apollo'
 import gql from 'graphql-tag'
-import { View, ScrollView, TouchableOpacity, Button, FlatList, Image, Text, StyleSheet, TouchableHighlight, KeyboardAvoidingView } from 'react-native'
+import { View, ActivityIndicator, ScrollView, TouchableOpacity, Button, FlatList, Image, Text, StyleSheet, TouchableHighlight, KeyboardAvoidingView } from 'react-native'
 import { TextInput } from 'react-native-paper';
+
+const signUpUserMutation = gql`
+  mutation ($email: String!, $password: String!){
+    createUser(authProvider: {email: {email: $email, password: $password}}) {
+      id
+    }
+  }
+`
 
 const signInUserMutation = gql`
   mutation ($email: String!, $password: String!){
@@ -15,13 +23,14 @@ const signInUserMutation = gql`
   }
 `
 
-class SignIn extends React.Component {
+class SignUp extends React.Component {
 	static navigationOptions = {
-    title: 'Sign in',
+    title: 'Sign up',
     headerLeft: null,
     headerStyle: {
       backgroundColor: '#009688',
     },
+
     headerTintColor: '#fff',
     headerTitleStyle: {
       fontWeight: 'bold',
@@ -33,25 +42,44 @@ class SignIn extends React.Component {
     password: ''
   }
 
-  handleSignInButton = async () => {
+  handleSignUpButton = async () => {
     try {
       const {email, password} = this.state
+      await this.props.signUpUserMutation({
+       variables: {email, password}
+      })
+
       const result = await this.props.signInUserMutation({
        variables: {email, password}
       })
 
       global.token = result.data.signinUser.token
+
       this.props.navigation.navigate('RecipeList', {
         user: result.data.signinUser.user
       })
     }
     catch(e) {
-      alert("Email or password does not match")
+      console.log('EROOR', e)
     }
-
   }
 
   render () {
+    if (this.props.signUpUserMutation.loading) {
+      return (
+        <View style={{flex: 1, padding: 20}}>
+          <ActivityIndicator/>
+        </View>
+      )
+    }
+
+    if (this.props.signInUserMutation.loading) {
+      return (
+        <View style={{flex: 1, padding: 20}}>
+          <ActivityIndicator/>
+        </View>
+      )
+    }
 
     return (
     	<View style={styles.container}>
@@ -72,25 +100,25 @@ class SignIn extends React.Component {
         />
 
         <TouchableOpacity
-          style={styles.signInButton}
+          style={styles.signUpButton}
           onPress={() => {
-            this.handleSignInButton()
+            this.handleSignUpButton()
           }}
           
         >
-          <Text style={styles.signInButtonText}>
-            Login
+          <Text style={styles.signUpButtonText}>
+            SignUp
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={{padding: 8}}
           onPress={() => {
-            this.props.navigation.navigate('SignUp')
+            this.props.navigation.navigate('SignIn')
           }}
         >
           <Text style={{textAlign: 'center'}}>
-            Do not have an account? Sign Up
+            Already have an account? Sign In
           </Text>
         </TouchableOpacity>
 
@@ -108,13 +136,13 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16
   },
-  signInButton: {
+  signUpButton: {
     alignItems: 'center',
     backgroundColor: '#009688',
     padding: 10,
     marginTop: 10
   },
-  signInButtonText: {
+  signUpButtonText: {
     color: "#fff",
     fontWeight: 'bold'
   }
@@ -122,4 +150,8 @@ const styles = StyleSheet.create({
   
 })
 
-export default graphql(signInUserMutation, {name: 'signInUserMutation'})(SignIn)
+export default compose(graphql(signUpUserMutation, {name: 'signUpUserMutation'}), graphql(signInUserMutation, {name: 'signInUserMutation'}))(SignUp)
+
+
+
+
