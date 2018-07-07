@@ -1,7 +1,7 @@
 import React from 'react'
 import Recipe from './Recipe'
 import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
+import { gql } from 'apollo-boost'
 import ActionButton from 'react-native-action-button';
 import { View, ActivityIndicator, RefreshControl, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native'
 

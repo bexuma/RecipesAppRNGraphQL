@@ -1,7 +1,7 @@
 import React from 'react'
 import { createStackNavigator } from 'react-navigation'
 import { ApolloProvider } from 'react-apollo'
-import { ApolloClient, HttpLink, InMemoryCache } from 'apollo-client-preset'
+import { ApolloClient, HttpLink, InMemoryCache } from 'apollo-boost'
 import { setContext } from 'apollo-link-context';
 import RecipeList from './RecipeList'
 import Recipe from './Recipe'

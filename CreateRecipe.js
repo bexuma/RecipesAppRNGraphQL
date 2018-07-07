@@ -1,7 +1,7 @@
 import React from 'react'
 import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
-import { View, ScrollView, TouchableOpacity, Button, FlatList, Image, Text, StyleSheet, TouchableHighlight, KeyboardAvoidingView } from 'react-native'
+import { gql } from 'apollo-boost'
+import { View, ScrollView, TouchableOpacity, FlatList, Image, Text, StyleSheet, KeyboardAvoidingView } from 'react-native'
 import { TextInput } from 'react-native-paper';
 import { ImagePicker } from 'expo';
 

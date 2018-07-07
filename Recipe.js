@@ -1,7 +1,7 @@
 import React from 'react'
 import { ScrollView, Image, Text, StyleSheet, FlatList, TouchableOpacity, Share } from 'react-native'
 import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
+import { gql } from 'apollo-boost'
 
 const deleteRecipeMutation = gql`
   mutation ($id: ID!){
