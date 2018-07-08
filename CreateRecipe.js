@@ -1,13 +1,13 @@
 import React from 'react'
 import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
-import { View, ScrollView, TouchableOpacity, Button, FlatList, Image, Text, StyleSheet, TouchableHighlight, KeyboardAvoidingView } from 'react-native'
+import { gql } from 'apollo-boost'
+import { View, ScrollView, TouchableOpacity, FlatList, Image, Text, StyleSheet, KeyboardAvoidingView } from 'react-native'
 import { TextInput } from 'react-native-paper';
 import { ImagePicker } from 'expo';
 
 const createRecipeMutation = gql`
-  mutation ($title: String!, $description: String!, $ingredients: [String!]!, $instructions: [String!]!){
-    createRecipe(title: $title, description: $description, ingredients: $ingredients, instructions: $instructions) {
+  mutation ($title: String!, $description: String!, $ingredients: [String!]!, $instructions: [String!]!, $imageUrl: String!, $authorId: ID!){
+    createRecipe(title: $title, description: $description, ingredients: $ingredients, instructions: $instructions, imageUrl: $imageUrl, authorId: $authorId) {
       id
     }
   }
@@ -32,7 +32,7 @@ class CreateRecipe extends React.Component {
     instruction: '',
     ingredients: [],
     instructions: [],
-    pictureUrl: ''
+    image: ''
   }
 
   handleAddIngredientForm = () => {
@@ -52,6 +52,7 @@ class CreateRecipe extends React.Component {
   render () {
   	const { navigation } = this.props;
     const allRecipesQuery = navigation.getParam('allRecipesQuery', '');
+    const authorId = navigation.getParam('authorId', '')
     const ingredientInputText = (this.state.ingredients.length === 0)
     		? 'Insert an ingredient...'
     		: 'Insert one more ingredient...'
@@ -59,7 +60,7 @@ class CreateRecipe extends React.Component {
     		? 'Insert an instruction...'
     		: 'Insert one more instruction...'
 
-    let { pictureUrl } = this.state;
+    let { image } = this.state;
 
     return (
     	<KeyboardAvoidingView
@@ -137,8 +138,8 @@ class CreateRecipe extends React.Component {
 
         </TouchableOpacity>
 
-        {pictureUrl
-            ? (<Image source={{ uri: pictureUrl }} style={{ height: 200, marginTop: 10 }} />)
+        {image
+            ? (<Image source={{ uri: image.uri }} style={{ height: 200, marginTop: 10 }} />)
             : null }
         
         <TouchableOpacity
@@ -153,10 +154,16 @@ class CreateRecipe extends React.Component {
         <TouchableOpacity
         	style={styles.submitButton}
         	onPress={() => {
+<<<<<<< HEAD
             this.uploadPhoto(this.state.title, pictureUrl)
           	// this._createRecipe()
           	// allRecipesQuery.refetch()
           	// this.props.navigation.goBack()
+=======
+            this._createRecipe(image, authorId);
+          	allRecipesQuery.refetch()
+          	this.props.navigation.goBack()
+>>>>>>> 43a56931693cb44e94b1a4705e753a1c90534ff9
           }}
         	
         >
@@ -177,16 +184,31 @@ class CreateRecipe extends React.Component {
     });
 
     if (!result.cancelled) {
-      this.setState({ pictureUrl: result.uri });
+      this.setState({ image: result });
     }
   };
 
-  _createRecipe = async () => {
-   const {title, description, ingredients, instructions} = this.state
-   await this.props.createRecipeMutation({
-     variables: {title, description, ingredients, instructions}
-   })
-   this.props.onComplete()
+  _createRecipe = async (image, authorId) => {
+    let data = new FormData()
+    data.append('data', {uri: image.uri, name: 'Recipe', type: 'multipart/form-data'})
+
+    try {
+      const res = await fetch('https://api.graph.cool/file/v1/cjd2s0bub97io0123o8twdrjt', {
+        method: 'POST',
+        body: data
+      })
+      const resJson = await res.json();
+      // alert(JSON.stringify(resJson));
+      // console.log('resJson: ', resJson)
+      const {title, description, ingredients, instructions} = this.state
+      await this.props.createRecipeMutation({
+       variables: {title, description, ingredients, instructions, imageUrl: resJson.url, authorId: authorId}
+      })
+
+    } catch (err) {
+      console.log('err', err)
+    }
+    
   }
 
   uploadPhoto = (localUri, filename) => {

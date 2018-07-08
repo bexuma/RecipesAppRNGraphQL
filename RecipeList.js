@@ -1,9 +1,9 @@
 import React from 'react'
 import Recipe from './Recipe'
 import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
+import { gql } from 'apollo-boost'
 import ActionButton from 'react-native-action-button';
-import { View, TouchableHighlight, ActivityIndicator, RefreshControl, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native'
+import { View, ActivityIndicator, RefreshControl, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native'
 
 const allRecipesQuery = gql`
   query {
@@ -13,6 +13,7 @@ const allRecipesQuery = gql`
       description
       ingredients
       instructions
+      imageUrl
     }
   }
 `
@@ -21,6 +22,7 @@ class RecipeList extends React.Component {
 
   static navigationOptions = {
     title: 'Recipe list',
+    headerLeft: null,
     headerStyle: {
       backgroundColor: '#159688',
     },
@@ -53,6 +55,7 @@ class RecipeList extends React.Component {
       <TouchableOpacity style={styles.recipe} onPress={() =>
           navigation.navigate('Recipe', {
             recipe: item,
+            allRecipesQuery: this.props.allRecipesQuery,
           })
         }>
         <View>
@@ -73,6 +76,9 @@ class RecipeList extends React.Component {
   }
 
   render () {
+    const { navigation } = this.props;
+    const user = navigation.getParam('user', '')
+
     if (this.props.allRecipesQuery.loading) {
       return (
         <View style={{flex: 1, padding: 20}}>
@@ -98,6 +104,7 @@ class RecipeList extends React.Component {
           onPress={() => {
             this.props.navigation.navigate('CreateRecipe', {
               allRecipesQuery: this.props.allRecipesQuery,
+              authorId: user.id
             })
           }}
         />
